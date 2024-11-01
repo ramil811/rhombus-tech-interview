@@ -31,6 +31,7 @@ To get a local copy up and running follow these simple steps.
     ```
 
 3. Activate the virtual environment
+    <br/>
     On Windows:
     <br/>
     ```sh
