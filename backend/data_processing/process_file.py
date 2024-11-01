@@ -12,29 +12,44 @@ def process_file(file_path):
     print(data.dtypes)
     print("====================================")
 
+    data_types = [None for _ in range(len(data.columns))]
+
     # for each column infer the data type
-    for col in data.columns:
+    for index, col in enumerate(data.columns):
         # Attempt to convert to numeric first
         # return integer if possible, otherwise float
-        if col != 'Score':
-            continue
-        print(data[col])
         try:
-            data_converted = pd.to_numeric(data[col], errors='coerce')
-            print(data[col].apply(lambda x: isinstance(x, int)).any())
-            print(data_converted.isna().any())
-            # if data_converted[col].isna().any() or data_converted[col].apply(lambda x: x.isinstance(x, float)).any():
-            #     data_converted[col] = data_converted[col].astype(float)
-            # else:
-            #     data_converted[col] = data_converted[col].astype(int)
-            print(data_converted)
+            # convert all values to numeric, 'NaN' for non-numeric values
+            data_converted = data[col].apply(pd.to_numeric, errors='coerce')
+            # fill NaN values with 0
+            data_converted = data_converted.fillna(-1)
+            # check if all values are -1
+            if (data_converted == -1).all():
+                pass
+            else:
+                # check if all values are integers
+                if data_converted.apply(lambda x: x.is_integer()).all():
+                    data_converted = data_converted.astype(int)
+                    data_types[index] = data_converted.dtype
+                    data[col] = data_converted
+                else:
+                    data_converted = data_converted.astype(float)
+                    data[col] = data_converted
+                    data_types[index] = data_converted.dtype
+                continue
         except ValueError as e:
-            print(e)
             pass
-        print("====================================")
+
+        # Attempt to convert to datetime
+        try:
+            data[col] = pd.to_datetime(data[col])
+            data_types[index] = data[col].dtype
+        except (ValueError, TypeError):
+            pass
 
     print("==== Data after type inference ====")
     print(data.dtypes)
+    return data_types
         
 
 process_file('sample_data.csv')
