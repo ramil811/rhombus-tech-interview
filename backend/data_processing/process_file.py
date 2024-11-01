@@ -14,9 +14,17 @@ def process_file(file_path):
 
     data_types = [None for _ in range(len(data.columns))]
 
+
     # for each column infer the data type
     for index, col in enumerate(data.columns):
-        # Attempt to convert to numeric first
+        # convert to boolean
+        # check if the column contains unique 2 values
+        if len(data[col].unique()) == 2:
+            data[col] = data[col].astype(bool)
+            data_types[index] = data[col].dtype
+            continue
+
+        # Attempt to convert to numeric
         # return integer if possible, otherwise float
         try:
             # convert all values to numeric, 'NaN' for non-numeric values
@@ -44,8 +52,27 @@ def process_file(file_path):
         try:
             data[col] = pd.to_datetime(data[col])
             data_types[index] = data[col].dtype
+            continue
         except (ValueError, TypeError):
             pass
+
+        # attempt to convert to categorical
+        try:
+            if len(data[col].unique()) / len(data[col]) < 1:
+                data_converted = pd.Categorical(data[col])
+                print(data_converted)
+                data[col] = data_converted
+                data_types[index] = data_converted.dtype
+                continue
+        except (ValueError, TypeError):
+            pass
+
+        # if all values are strings
+        if data[col].apply(lambda x: isinstance(x, str)).all():
+            data_types[index] = 'string'
+            data[col] = data[col].astype(str)
+            continue
+
 
     print("==== Data after type inference ====")
     print(data.dtypes)
