@@ -24,13 +24,19 @@ To get a local copy up and running follow these simple steps.
    git clone git@github.com:ramil811/rhombus-tech-interview.git
     ```
 
-2. Create a python virtual environment
+2. Install the required packages
+    ```sh
+    cd rhombus-tech-interview
+    pip install -r requirements.txt
+    ```
+
+3. Create a python virtual environment
 
     ```sh
     python -m venv env
     ```
 
-3. Activate the virtual environment
+4. Activate the virtual environment
     <br/>
     On Windows:
     <br/>
@@ -43,7 +49,7 @@ To get a local copy up and running follow these simple steps.
     source env/bin/activate
     ```
 
-4. Start the Django server
+5. Start the Django server
     ```sh
     cd rhombus-tech-interview
     cd backend
